@@ -12,6 +12,7 @@ public class Analysis {
 
     public static double sum =0;
     public static char func = ' ';
+    public static char cur = ' ';
 
     public double calculate(String input) {
         Pattern pattern = null;
@@ -22,8 +23,14 @@ public class Analysis {
             System.out.println("Неверный ввод!");
             return 0;
         }
-        else if(dol>-1)  pattern = Pattern.compile("\\$(\\d+(?:\\.\\d+)?)|([-+])\\s\\$(\\d+(?:\\.\\d+)?)");
-         else if(rub>-1) pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(р)\\s?([-+])?");
+        else if(dol>-1) {
+            if(cur ==' ') cur ='$';
+            pattern = Pattern.compile("\\$(\\d+(?:\\.\\d+)?)|([-+])\\s\\$(\\d+(?:\\.\\d+)?)");
+        }
+         else if(rub>-1){
+             if(cur ==' ') cur ='р';
+             pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(р)\\s?([-+])?");
+         }
 
         Matcher matcher = pattern.matcher(input);
         double total = 0.0;
@@ -45,7 +52,6 @@ public class Analysis {
                 total += amount;
             }
         }
-        //System.out.println(total);
         return total;
         }
 
@@ -56,9 +62,11 @@ public class Analysis {
         int start1 = input.indexOf("toRubles(");   //если ничего нет
         while ((start != -1) || (start1 != -1)){
 
-        if(start1< start && start1 != -1) start = start1;
-        else if(start == -1) start = start1;
-
+        if(start1< start && start1 != -1) {
+            start = start1;}
+        else if(start == -1) {
+            start = start1;
+        }
         if (start != -1) {
             int openBrackets = 0;
             int end = -1;
@@ -81,8 +89,9 @@ public class Analysis {
             if (end != -1) {
 
                 String substring = input.substring(start -3, end +1 );
+                if(cur == ' ' && substring.charAt(5) =='D') cur = '$';
+                else if(cur == ' ' && substring.charAt(5) =='R') cur = 'р';
                 stack.push(substring);
-                System.out.println("Подстрока найдена: " + substring);
                 input = input.substring(0, start - 3) + input.substring(end +1);
                 start = input.indexOf("toDollars(");
                 start1 = input.indexOf("toRubles(");              //добавить проверку

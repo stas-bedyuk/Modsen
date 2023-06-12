@@ -16,13 +16,13 @@ public class CurrencyCalculator {
         //String input = "$10 - $2 + toDollars(737р + toRubles($85,4) + 100р) + $18 + toDollars(200р) + $70";
          //String input = "10р - 2р + toDollars(737р + toRubles($85,4) + 100р) + 18р + toDollars(200р) + 70р ";
          String input = "$10 - $2 + toDollars(737р + 10,3333р + 2,501р + toRubles($85,4 + toDollars(200р + 10р)) + 100,44р) + $18 + $70";
+
          Analysis s = new Analysis();
          String str = s.simplifyString(input);
-         System.out.println(str);
          amount = s.calculate(str);
-         System.out.println("  " + amount);
          amount += s.calculateStringsInStack();
-         System.out.println(" S: " + amount);
+         if(s.cur == '$') System.out.println("Result: " + "$" + Math.round(amount * 100) / 100.0);
+         else System.out.println("Result: " + Math.round(amount * 100) / 100.0 + "р");
 
 
     }
