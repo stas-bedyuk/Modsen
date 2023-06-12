@@ -18,7 +18,7 @@ public class Analysis {
         Pattern pattern = null;
         int dol = input.indexOf("$");
         int rub = input.indexOf("р");
-
+        input = input.replace(",", ".");
          if(dol >-1 && rub >-1) {
             System.out.println("Неверный ввод!");
             return 0;
