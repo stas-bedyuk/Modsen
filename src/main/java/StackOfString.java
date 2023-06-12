@@ -19,12 +19,6 @@ public class StackOfString {
         return stack.remove(stack.size() - 1);
     }
 
-    public String peek() {
-        if (isEmpty()) {
-            throw new IllegalStateException("Stack is empty");
-        }
-        return stack.get(stack.size() - 1);
-    }
 
     public boolean isEmpty() {
         return stack.isEmpty();

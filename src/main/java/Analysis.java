@@ -1,5 +1,8 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,10 +101,7 @@ public class Analysis {
 
         while (!stack.isEmpty()) {
             String str = stack.pop();
-            char sign = str.charAt(1);   //в самом конце применить
             int start = findInnerFunction(str);
-            char sign1 = ' ';
-
             while(start != -1) {
                 int end = str.indexOf(')');   //получили индексы самой внутренней функции
 
@@ -154,9 +154,28 @@ public class Analysis {
         }
     }
     public String toDollar(double amount){
-        return  "$" + (amount/60);
+
+        return  "$" + (amount/getRate());
     }
     public String toRubles(double amount){
-        return   (amount*60) +"р";
+
+        return   (amount*getRate()) +"р";
+    }
+
+    public double getRate(){
+        File file = new File("src/main/resources/rate.txt");
+        double rate =1;
+        try {
+            Scanner scanner = new Scanner(file);
+            if (scanner.hasNextDouble()) {
+                rate = scanner.nextDouble();
+            } else {
+                System.out.println("В файле не найдено число.");
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Файл не найден.");
+        }
+        return rate;
     }
 }
