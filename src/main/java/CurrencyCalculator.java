@@ -8,19 +8,24 @@ import java.util.regex.Pattern;
 public class CurrencyCalculator {
 
     private static double amount =0;
-    //10р + 10р - 5р + 1р
+
      public static void main(String[] args) {
          Analysis s = new Analysis();
          while(true) {
              s.sum = 0;
              s.func = ' ';
              s.cur = ' ';
+             amount = 0;
              System.out.print("Enter: ");
              Scanner input = new Scanner(System.in);
              String str = input.nextLine();
              //String input = "$10 - $2 + toDollars(737р + toRubles($85,4) + 100р) + $18 + toDollars(200р) + $70";
              //String input = "10р - 2р + toDollars(737р + toRubles($85,4) + 100р) + 18р + toDollars(200р) + 70р ";
              //String input = "$10 - $2 + toDollars(737р + 10,3333р + 2,501р + toRubles($85,4 + toDollars(200р + 10р)) + 100,44р) + $18 + $70";
+             if(str.equals("")){
+                 System.out.println("Пустая строка!");
+                 continue;
+             }
             if(checkSignsSeparated(str) == -1) {
                 System.out.println("Вводимое выражение должно иметь пробелы до и после '+' и '-'");
                 continue;
@@ -30,13 +35,20 @@ public class CurrencyCalculator {
                  continue;
              }
 
-
-
-
-
              str = s.simplifyString(str);
-             amount = s.calculate(str);
-             amount += s.calculateStringsInStack();
+             if(str == null){
+                 System.out.println("Неверный ввод! (сложение или вычитание разных валют)");
+                 continue;
+             }
+             double subsum = s.calculateStringsInStack();
+             if(subsum == -1 ){
+                 System.out.println("Неверный ввод! (сложение или вычитание разных валют)");
+                 continue;
+             }
+             amount+=subsum;
+            if (!str.equals("")) amount += s.calculate(str);
+             if(amount == -1) continue;
+
              if (s.cur == '$') System.out.println("Result: " + "$" + Math.round(amount * 100) / 100.0);
              else System.out.println("Result: " + Math.round(amount * 100) / 100.0 + "р");
 

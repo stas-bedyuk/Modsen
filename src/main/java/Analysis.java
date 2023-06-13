@@ -20,24 +20,33 @@ public class Analysis {
         int rub = input.indexOf("р");
         input = input.replace(",", ".");
          if(dol >-1 && rub >-1) {
-            System.out.println("Неверный ввод!");
-            return 0;
+            System.out.println("Неверный ввод! (сложение или вычитание разных валют)");
+            return -1;
         }
         else if(dol>-1) {
-            if(cur ==' ') cur ='$';
+                cur ='$';
             pattern = Pattern.compile("\\$(\\d+(?:\\.\\d+)?)|([-+])\\s\\$(\\d+(?:\\.\\d+)?)");
         }
          else if(rub>-1){
-             if(cur ==' ') cur ='р';
-             pattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(р)\\s?([-+])?");
+                 cur ='р';
+             pattern = Pattern.compile("(?:\\s*([-+])\\s*)?(\\d+(?:\\.\\d+)?)(р)");
          }
-
+        String match = "";
+        String operator = "";
+        String match2 = "";
         Matcher matcher = pattern.matcher(input);
         double total = 0.0;
         while (matcher.find()) {
-            String match = matcher.group(1);
-            String operator = matcher.group(2);
-            String match2 = matcher.group(3);
+            if(rub>-1) {
+                 match = matcher.group(2);
+                 operator = matcher.group(1);
+                 match2 = matcher.group(3);
+            }
+            else{
+                match = matcher.group(1);
+                operator = matcher.group(2);
+                match2 = matcher.group(3);
+            }
             double amount;
             if (match != null) {
                 amount = Double.parseDouble(match);
@@ -56,21 +65,28 @@ public class Analysis {
         }
 
     public String simplifyString(String input){
-       // StackOfString stack = new StackOfString();
+
         input = " + " + input;
         int start = input.indexOf("toDollars(");
         int start1 = input.indexOf("toRubles(");   //если ничего нет
+        int count1 = 0;
+        int count2 = 0;
+        int count3 = 0;
+        int count4 = 0;
         while ((start != -1) || (start1 != -1)){
 
         if(start1< start && start1 != -1) {
-            start = start1;}
+            start = start1;
+            count1++;
+        }
         else if(start == -1) {
             start = start1;
+            count1++;
         }
         if (start != -1) {
             int openBrackets = 0;
             int end = -1;
-
+            count2++;
             for (int i = start + 10; i < input.length(); i++) {
                 char c = input.charAt(i);
 
@@ -90,11 +106,12 @@ public class Analysis {
 
                 String substring = input.substring(start -3, end +1 );
                 if(cur == ' ' && substring.charAt(5) =='D') cur = '$';
+
                 else if(cur == ' ' && substring.charAt(5) =='R') cur = 'р';
                 stack.push(substring);
                 input = input.substring(0, start - 3) + input.substring(end +1);
                 start = input.indexOf("toDollars(");
-                start1 = input.indexOf("toRubles(");              //добавить проверку
+                start1 = input.indexOf("toRubles(");
             } else {
                 System.out.println("Неправильный формат строки.");
             }
@@ -102,6 +119,9 @@ public class Analysis {
             System.out.println("Подстрока не найдена.");
         }
         }
+        count4 =input.indexOf('$');
+        count3 = input.indexOf('р');
+        if ((count3 != -1 && count4 != -1) ||(count1 >0 && count2 >0) || (count1 >0 && count4 != -1) || (count2 >0 && count3 != -1)) return null;
         return input;
     }
   public double calculateStringsInStack(){
@@ -123,9 +143,11 @@ public class Analysis {
                  substring = substring.replace(",", ".");
                 amount = calculate(substring);
                 if (func == 'd') {
-                    String newstr = toDollar(amount);
+                    if(cur =='$') return -1;
+                    String newstr = toDollars(amount);
                     str = str.substring(0, start ) + newstr + str.substring(end + 1);
                 } else if (func == 'r') {
+                    if(cur =='р') return -1;
                     String newstr = toRubles(amount);
                     str = str.substring(0, start )  + newstr + str.substring(end + 1);
                 }
@@ -162,7 +184,7 @@ public class Analysis {
             }
         }
     }
-    public String toDollar(double amount){
+    public String toDollars(double amount){
 
         return  "$" + (amount/getRate());
     }
